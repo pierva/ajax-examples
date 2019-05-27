@@ -43,19 +43,32 @@ function loadData() {
     // Wikipedia articles
     var wikiURL = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+
                   city + "&format=json&callback=wikiCallback";
+
+    // Error handling using jsonp. Since there isn't a built in error handling
+    // when using jsonp, we can create a timeout that fires when we submit
+    // the search. If everything goes well, we'll clear the timeout before
+    // it changes the displayed text. If the callback function fails, the
+    // timeout will run its function and the text will change to the one
+    // specified in the timeout function.
+    var wikiRequestTimeout = setTimeout(function() {
+      $wikiElem.text('Failed to load wikipedia resources.')
+    }, 5000);
+
     $.ajax({
       url: wikiURL,
       dataType: 'jsonp',
       // if the callback in the API url was named differently than 'callback',
       // you would specify the name in the below parameter. In this case the
       // callback is called 'callback' (look at the url => callback=wikiCallback),
-      // therefore we don't need to specify the jsonp callback function name 
+      // therefore we don't need to specify the jsonp callback function name
       //jsonp: "callback"
       success: function(response){
         $.each(response[1], function(index, article){
           var url = 'https://en.wikipedia.org/wiki/' + article;
           $wikiElem.append('<li><a href="' + url + '">' + article + '</a></li>');
         });
+        console.log(response);
+        clearTimeout(wikiRequestTimeout);
       }
     });
 
