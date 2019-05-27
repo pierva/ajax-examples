@@ -67,7 +67,6 @@ function loadData() {
           var url = 'https://en.wikipedia.org/wiki/' + article;
           $wikiElem.append('<li><a href="' + url + '">' + article + '</a></li>');
         });
-        console.log(response);
         clearTimeout(wikiRequestTimeout);
       }
     });
