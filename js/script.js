@@ -21,7 +21,6 @@ function loadData() {
     var src = 'https://maps.googleapis.com/maps/api/streetview?size=600x400&' +
               'location=' + location +
               '&key=' + gStreetViewKey + '';
-    console.log(src);
     $body.append('<img class="bgimg" src="' + src +'">');
 
     var nytURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?' +
@@ -39,6 +38,25 @@ function loadData() {
     })
     .fail(function() {
       $nytHeaderElem.text('New York Times Articles could not be loaded');
+    });
+
+    // Wikipedia articles
+    var wikiURL = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+
+                  city + "&format=json&callback=wikiCallback";
+    $.ajax({
+      url: wikiURL,
+      dataType: 'jsonp',
+      // if the callback in the API url was named differently than 'callback',
+      // you would specify the name in the below parameter. In this case the
+      // callback is called 'callback' (look at the url => callback=wikiCallback),
+      // therefore we don't need to specify the jsonp callback function name 
+      //jsonp: "callback"
+      success: function(response){
+        $.each(response[1], function(index, article){
+          var url = 'https://en.wikipedia.org/wiki/' + article;
+          $wikiElem.append('<li><a href="' + url + '">' + article + '</a></li>');
+        });
+      }
     });
 
     return false;
